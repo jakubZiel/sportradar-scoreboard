@@ -1,4 +1,4 @@
-package com.sportradar.scoreboard.domain.processing;
+package com.sportradar.scoreboard.domain.util;
 
 import java.time.Instant;
 import java.util.List;
@@ -22,11 +22,12 @@ public class GameTestUtil
             .withOvertimes(List.of())
             .withTeamIdToScore(Map.of(1L, 0, 2L, 0))
             .withTeamIdToSquad(Map.of(
-                1L, Squad.builder()
+                1L, Squad.builder().withTeamId(1L)
                     .withFirstEleven(LongStream.rangeClosed(1, 11).boxed().toList())
                     .withReserves(LongStream.rangeClosed(12, 18).boxed().toList())
                     .build(),
-                2L, Squad.builder().withFirstEleven(LongStream.rangeClosed(21, 32).boxed().toList())
+                2L, Squad.builder().withTeamId(2L)
+                    .withFirstEleven(LongStream.rangeClosed(21, 32).boxed().toList())
                     .withReserves(LongStream.rangeClosed(33, 39).boxed().toList())
                     .build()))
             .withTeamIdToCardSet(Map.of())
