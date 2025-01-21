@@ -3,7 +3,6 @@ package com.sportradar.scoreboard.domain.processing;
 import static com.sportradar.scoreboard.domain.event.CardEvent.Card.RED;
 import static com.sportradar.scoreboard.domain.event.CardEvent.Card.YELLOW;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 
 import java.time.Duration;
 import java.util.List;
@@ -14,12 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 
 import com.sportradar.scoreboard.domain.event.CardEvent;
 import com.sportradar.scoreboard.domain.event.EventCommon;
-import com.sportradar.scoreboard.domain.game.Game;
 import com.sportradar.scoreboard.domain.team.CardSet;
 import com.sportradar.scoreboard.domain.team.Squad;
 
@@ -27,9 +23,6 @@ import com.sportradar.scoreboard.domain.team.Squad;
 class CardEventProcessorTest extends ProcessorTest
 {
     private CardEventProcessor tested;
-
-    @Captor
-    private ArgumentCaptor<Game> gameUpdateCaptor;
 
     @BeforeEach
     void setUp()
@@ -162,13 +155,5 @@ class CardEventProcessorTest extends ProcessorTest
         assertThatThrownBy(() -> tested.process(originalGame, cardEvent))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Card received for a player with ID: 1, that already has a red card");
-    }
-
-    private void verifyCapturedGameState(final SoftAssertions softly, final Game expectedGameState)
-    {
-        verify(gameStateRepository).update(gameUpdateCaptor.capture());
-        final var capturedGame = gameUpdateCaptor.getValue();
-
-        softly.assertThat(capturedGame).isEqualTo(expectedGameState);
     }
 }
