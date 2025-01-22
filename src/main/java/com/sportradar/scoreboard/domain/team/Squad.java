@@ -6,6 +6,6 @@ import lombok.Builder;
 
 
 @Builder(setterPrefix = "with", toBuilder = true)
-public record Squad(long teamId, List<Long> firstEleven, List<Long> reserves)
+public record Squad(long teamId, List<Long> firstEleven, List<Long> reserves, List<Long> substituted)
 {
 }

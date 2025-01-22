@@ -1,5 +1,6 @@
 package com.sportradar.scoreboard.domain.util;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class GameTestUtil
                     .withReserves(LongStream.rangeClosed(33, 39).boxed().toList())
                     .build()))
             .withTeamIdToCardSet(Map.of())
+            .withCurrentMatchTime(Duration.ZERO)
             .build();
     }
 }
