@@ -20,7 +20,7 @@ import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
 @ExtendWith({MockitoExtension.class, SoftAssertionsExtension.class})
 public class ProcessorTest
 {
-    protected static Game DEFAULT_GAME = GameTestUtil.buildDefaultGame(1000L, 30L * 60L * 1000L);
+    protected static Game DEFAULT_GAME = GameTestUtil.buildDefaultGame(1000L, null);
 
     @Mock
     protected GameStateRepository gameStateRepository;

@@ -11,6 +11,8 @@ import lombok.Getter;
 public class GoalEvent implements SportEvent
 {
     private final EventCommon eventCommon;
+    private final long goalScorerId;
+    private final boolean isOwnGoal;
 
     @Override
     public void accept(final SportEventVisitor visitor)
