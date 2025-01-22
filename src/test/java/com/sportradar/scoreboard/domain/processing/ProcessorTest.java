@@ -36,7 +36,7 @@ public class ProcessorTest
 
     protected void verifyCapturedGameState(final SoftAssertions softly, final Game expectedGameState)
     {
-        verify(gameStateRepository).update(gameUpdateCaptor.capture());
+        verify(gameStateRepository).save(gameUpdateCaptor.capture());
         final var capturedGame = gameUpdateCaptor.getValue();
 
         softly.assertThat(capturedGame).isEqualTo(expectedGameState);

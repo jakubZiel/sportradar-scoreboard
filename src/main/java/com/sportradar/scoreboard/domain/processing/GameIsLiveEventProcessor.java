@@ -24,15 +24,15 @@ class GameIsLiveEventProcessor
         final var eventTime = gameIsLiveEvent.getEventTime();
         final var gameKey = gameIsLiveEvent.getEventCommon().gameKey();
 
+        final var foundGame = gameStateRepository.findByKey(gameKey);
+
         if (!isLive)
         {
-            gameStateRepository.findByKey(gameKey)
-                .ifPresentOrElse(g -> handleGameClosing(g, eventTime), () -> throwOnClosingNonExistingGame(gameKey));
+            foundGame.ifPresentOrElse(g -> handleGameClosing(g, eventTime), () -> throwOnClosingNonExistingGame(gameKey));
             return;
         }
 
-        gameStateRepository.findByKey(gameKey)
-            .ifPresentOrElse(existingGame -> throwOnCreatingAlreadyExistingGame(gameKey), () -> handleGameOpening(gameKey, gameIsLiveEvent));
+        foundGame.ifPresentOrElse(existingGame -> throwOnCreatingAlreadyExistingGame(gameKey), () -> handleGameOpening(gameKey, gameIsLiveEvent));
     }
 
     private void handleGameClosing(final Game game, final Instant closeTime)
@@ -46,7 +46,7 @@ class GameIsLiveEventProcessor
             .withCloseTime(closeTime)
             .build();
 
-        gameStateRepository.update(closedGame);
+        gameStateRepository.save(closedGame);
     }
 
     private void handleGameOpening(final GameKey gameKey, final GameIsLiveEvent gameIsLiveEvent)

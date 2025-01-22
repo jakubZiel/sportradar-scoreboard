@@ -1,7 +1,6 @@
 package com.sportradar.scoreboard.domain.processing;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Duration;
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.sportradar.scoreboard.domain.event.GameIsLiveEvent;
-import com.sportradar.scoreboard.domain.game.Game;
 import com.sportradar.scoreboard.domain.util.EventCommonTestUtil;
 
 
@@ -48,7 +46,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
         tested.process(event);
 
         // then
-        verifyCreatedGameState(softly, expectedGameState);
+        verifyCapturedGameState(softly, expectedGameState);
     }
 
     @Test
@@ -115,7 +113,8 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
         // when & then
         assertThatThrownBy(() -> tested.process(event))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessageContaining("Can not close game, game associated with a key: GameKey[team1Id=1, team2Id=2, scheduled=1970-01-01T00:00:01Z] is already closed");
+            .hasMessageContaining(
+                "Can not close game, game associated with a key: GameKey[team1Id=1, team2Id=2, scheduled=1970-01-01T00:00:01Z] is already closed");
     }
 
     @Test
@@ -139,13 +138,5 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
         assertThatThrownBy(() -> tested.process(event))
             .isInstanceOf(IllegalStateException.class)
             .hasMessageContaining("There is already a game associated with a key");
-    }
-
-    private void verifyCreatedGameState(final SoftAssertions softly, final Game expectedGameState)
-    {
-        verify(gameStateRepository).save(gameUpdateCaptor.capture());
-        final var capturedGame = gameUpdateCaptor.getValue();
-
-        softly.assertThat(capturedGame).isEqualTo(expectedGameState);
     }
 }

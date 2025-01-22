@@ -3,7 +3,6 @@ package com.sportradar.scoreboard.domain.processing;
 import java.util.Map;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.sportradar.scoreboard.domain.event.GoalEvent;
@@ -12,13 +11,7 @@ import com.sportradar.scoreboard.domain.util.EventCommonTestUtil;
 
 class GoalEventProcessorTest extends ProcessorTest
 {
-    private GoalEventProcessor tested;
-
-    @BeforeEach
-    void setUp()
-    {
-        tested = new GoalEventProcessor(gameStateRepository);
-    }
+    private final GoalEventProcessor tested = new GoalEventProcessor();
 
     @Test
     void test(final SoftAssertions softly)
@@ -34,9 +27,9 @@ class GoalEventProcessorTest extends ProcessorTest
             .build();
 
         // when
-        tested.process(DEFAULT_GAME, goalEvent);
+        final var gameUpdate = tested.process(DEFAULT_GAME, goalEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedGame);
     }
 }

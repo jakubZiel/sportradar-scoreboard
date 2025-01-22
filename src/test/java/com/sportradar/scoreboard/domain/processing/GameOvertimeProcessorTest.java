@@ -6,7 +6,6 @@ import java.time.Duration;
 import java.util.List;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.sportradar.scoreboard.domain.event.GameOvertimeEvent;
@@ -15,13 +14,7 @@ import com.sportradar.scoreboard.domain.util.EventCommonTestUtil;
 
 class GameOvertimeProcessorTest extends ProcessorTest
 {
-    private GameOvertimeProcessor tested;
-
-    @BeforeEach
-    void setUp()
-    {
-        tested = new GameOvertimeProcessor(gameStateRepository);
-    }
+    private final GameOvertimeProcessor tested = new GameOvertimeProcessor();
 
     @Test
     void testProcess_givenOvertime_shouldAddOvertimeToGameState(final SoftAssertions softly)
@@ -37,10 +30,10 @@ class GameOvertimeProcessorTest extends ProcessorTest
             .build();
 
         // when
-        tested.process(DEFAULT_GAME, gameOvertimeEvent);
+        final var gameUpdate = tested.process(DEFAULT_GAME, gameOvertimeEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedGame);
     }
 
     @Test

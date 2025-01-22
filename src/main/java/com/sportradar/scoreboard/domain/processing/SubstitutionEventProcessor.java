@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import com.sportradar.scoreboard.domain.event.SubstitutionEvent;
 import com.sportradar.scoreboard.domain.game.Game;
-import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
 import com.sportradar.scoreboard.util.ExceptionUtil;
 
 import lombok.NonNull;
@@ -17,9 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SubstitutionEventProcessor
 {
-    private final GameStateRepository gameStateRepository;
-
-    public void process(final Game game, final SubstitutionEvent substitutionEvent)
+    public Game process(final Game game, final SubstitutionEvent substitutionEvent)
     {
         final var updatedTeam = substitutionEvent.getEventCommon().associatedTeamId();
 
@@ -55,8 +52,7 @@ public class SubstitutionEventProcessor
             .map(entry -> Map.entry(entry.getKey(), entry.getKey().equals(updatedTeam) ? newSquad : entry.getValue()))
             .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        final var newGame = game.toBuilder().withTeamIdToSquad(newTeams).build();
-        gameStateRepository.update(newGame);
+        return game.toBuilder().withTeamIdToSquad(newTeams).build();
     }
 
     private List<Long> handleSubstitution(@NonNull final List<Long> squadList, final long addedPlayer, final long removedPlayer)

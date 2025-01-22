@@ -27,7 +27,7 @@ class CardEventProcessorTest extends ProcessorTest
     @BeforeEach
     void setUp()
     {
-        tested = new CardEventProcessor(gameStateRepository);
+        tested = new CardEventProcessor();
     }
 
     @Test
@@ -45,10 +45,10 @@ class CardEventProcessorTest extends ProcessorTest
             .build();
 
         // when
-        tested.process(DEFAULT_GAME, cardEvent);
+        final var gameUpdate = tested.process(DEFAULT_GAME, cardEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedUpdatedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedUpdatedGame);
     }
 
     @Test
@@ -70,10 +70,10 @@ class CardEventProcessorTest extends ProcessorTest
             .build();
 
         // when
-        tested.process(originalGame, cardEvent);
+        final var gameUpdate = tested.process(originalGame, cardEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedUpdatedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedUpdatedGame);
     }
 
     @Test
@@ -91,10 +91,10 @@ class CardEventProcessorTest extends ProcessorTest
             .build();
 
         // when
-        tested.process(DEFAULT_GAME, cardEvent);
+        final var gameUpdate = tested.process(DEFAULT_GAME, cardEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedUpdatedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedUpdatedGame);
     }
 
     @Test

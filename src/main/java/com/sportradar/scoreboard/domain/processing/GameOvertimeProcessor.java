@@ -13,9 +13,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 class GameOvertimeProcessor
 {
-    private final GameStateRepository gameStateRepository;
-
-    public void process(final Game game, final GameOvertimeEvent gameOvertimeEvent)
+    public Game process(final Game game, final GameOvertimeEvent gameOvertimeEvent)
     {
         if (game.overtimes().size() >= 2)
         {
@@ -25,7 +23,6 @@ class GameOvertimeProcessor
         final var updatedOvertimes = new ArrayList<>(game.overtimes());
         updatedOvertimes.add(gameOvertimeEvent.getOvertime());
 
-        final var newGame = game.toBuilder().withOvertimes(List.copyOf(updatedOvertimes)).build();
-        gameStateRepository.update(newGame);
+        return game.toBuilder().withOvertimes(List.copyOf(updatedOvertimes)).build();
     }
 }

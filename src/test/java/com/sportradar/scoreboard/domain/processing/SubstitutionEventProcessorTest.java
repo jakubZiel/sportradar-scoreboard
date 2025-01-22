@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.assertj.core.api.SoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.sportradar.scoreboard.domain.event.SubstitutionEvent;
@@ -16,13 +15,7 @@ import com.sportradar.scoreboard.domain.util.EventCommonTestUtil;
 
 class SubstitutionEventProcessorTest extends ProcessorTest
 {
-    private SubstitutionEventProcessor tested;
-
-    @BeforeEach
-    void setUp()
-    {
-        tested = new SubstitutionEventProcessor(gameStateRepository);
-    }
+    private final SubstitutionEventProcessor tested = new SubstitutionEventProcessor();
 
     @Test
     void testProcess_givenValidSubstitutionEvent_shouldUpdateGameStateSquadsWithCorrectUpdate(final SoftAssertions softly)
@@ -51,10 +44,10 @@ class SubstitutionEventProcessorTest extends ProcessorTest
         final var expectedGame = originalGame.toBuilder().withTeamIdToSquad(expectedSquads).build();
 
         // when
-        tested.process(originalGame, subEvent);
+        final var gameUpdate = tested.process(originalGame, subEvent);
 
         // then
-        verifyCapturedGameState(softly, expectedGame);
+        softly.assertThat(gameUpdate).isEqualTo(expectedGame);
     }
 
     @Test

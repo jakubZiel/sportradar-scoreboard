@@ -10,7 +10,6 @@ import java.util.Optional;
 import com.sportradar.scoreboard.domain.event.CardEvent;
 import com.sportradar.scoreboard.domain.game.Game;
 import com.sportradar.scoreboard.domain.team.CardSet;
-import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
 import com.sportradar.scoreboard.util.ExceptionUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -19,9 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 class CardEventProcessor
 {
-    private final GameStateRepository gameStateRepository;
-
-    public void process(final Game game, final CardEvent cardEvent)
+    public Game process(final Game game, final CardEvent cardEvent)
     {
         final var updatedTeam = cardEvent.getEventCommon().associatedTeamId();
         final var card = cardEvent.getCard();
@@ -51,8 +48,7 @@ class CardEventProcessor
         final var updatedTeamIdToCardSet = new HashMap<>(game.teamIdToCardSet());
         updatedTeamIdToCardSet.put(updatedTeam, cardSetUpdate);
 
-        final var gameUpdate = game.toBuilder().withTeamIdToCardSet(Map.copyOf(updatedTeamIdToCardSet)).build();
-        gameStateRepository.update(gameUpdate);
+        return game.toBuilder().withTeamIdToCardSet(Map.copyOf(updatedTeamIdToCardSet)).build();
     }
 
     private CardSet handleCard(final long playerId, final CardEvent.Card card, final CardSet originalCardSet)

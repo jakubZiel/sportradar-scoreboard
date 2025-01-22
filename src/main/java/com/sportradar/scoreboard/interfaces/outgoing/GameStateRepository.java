@@ -10,7 +10,5 @@ public interface GameStateRepository
 {
     void save(Game game);
 
-    void update(Game game);
-
     Optional<Game> findByKey(GameKey key);
 }
