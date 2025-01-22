@@ -25,7 +25,7 @@ class GoalEventProcessorTest extends ProcessorTest
     {
         // given
         final var goalEvent = GoalEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 35, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 35, 1L))
             .withGoalScorerId(2)
             .build();
 

@@ -32,7 +32,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
     {
         // given
         final var event = GameIsLiveEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1L))
             .withIsLive(true)
             .withEventTime(Instant.ofEpochMilli(2000L))
             .withTeamIdToSquad(DEFAULT_GAME.teamIdToSquad())
@@ -56,7 +56,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
     {
         // given
         final var event = GameIsLiveEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1L))
             .withIsLive(false)
             .withEventTime(Instant.ofEpochMilli(3000L))
             .build();
@@ -84,7 +84,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
     {
         // given
         final var event = GameIsLiveEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1L))
             .withIsLive(false)
             .withEventTime(Instant.ofEpochMilli(4000L))
             .build();
@@ -100,7 +100,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
     {
         // given
         final var event = GameIsLiveEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1L))
             .withIsLive(false)
             .withEventTime(Instant.ofEpochMilli(4000L))
             .build();
@@ -123,7 +123,7 @@ class GameIsLiveEventProcessorTest extends ProcessorTest
     {
         // given
         final var event = GameIsLiveEvent.builder()
-            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1))
+            .withEventCommon(EventCommonTestUtil.from(DEFAULT_GAME.key(), 93, 1L))
             .withIsLive(true)
             .withEventTime(Instant.ofEpochMilli(2000L))
             .build();
