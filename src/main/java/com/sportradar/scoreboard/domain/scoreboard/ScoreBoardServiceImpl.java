@@ -9,17 +9,15 @@ import com.sportradar.scoreboard.domain.game.GameKey;
 import com.sportradar.scoreboard.domain.processing.SportEventVisitor;
 import com.sportradar.scoreboard.interfaces.incoming.ScoreBoardService;
 import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
-import com.sportradar.scoreboard.interfaces.outgoing.SportEventRepository;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
-class ScoreBoardServiceImpl implements ScoreBoardService
+public class ScoreBoardServiceImpl implements ScoreBoardService
 {
     private final SportEventVisitor sportEventVisitor;
-    private final SportEventRepository sportEventRepository;
     private final GameStateRepository gameStateRepository;
 
     @Override
@@ -29,21 +27,21 @@ class ScoreBoardServiceImpl implements ScoreBoardService
     }
 
     @Override
-    public List<SportEvent> getGameHistory(@NonNull final GameKey gameKey)
+    public List<Game> getAll()
     {
-        return sportEventRepository.getHistory(gameKey);
+        return gameStateRepository.getAll().stream().sorted(this::orderGame).toList();
     }
 
     @Override
-    public <T extends SportEvent> List<T> getEventsByClass(@NonNull final GameKey gameKey, final Class<T> eventClass)
+    public Optional<Game> process(@NonNull final SportEvent event)
     {
-        return sportEventRepository.getEvents(gameKey, eventClass);
+        return Optional.ofNullable(event.accept(sportEventVisitor));
     }
 
-    @Override
-    public void process(@NonNull final SportEvent event)
+    private int orderGame(@NonNull final Game game1, @NonNull final Game game2)
     {
-        event.accept(sportEventVisitor);
-        sportEventRepository.addEvent(event);
+        final var totalScoreOrderDesc = Integer.compare(game1.totalScore(), game2.totalScore()) * -1;
+        final var creationTimeOrderDesc = game1.key().gameId().compareTo(game2.key().gameId()) * -1;
+        return totalScoreOrderDesc != 0 ? totalScoreOrderDesc : creationTimeOrderDesc;
     }
 }

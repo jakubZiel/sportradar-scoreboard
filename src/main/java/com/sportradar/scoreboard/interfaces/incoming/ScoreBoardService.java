@@ -14,9 +14,7 @@ public interface ScoreBoardService
 {
     Optional<Game> getGameState(@NonNull GameKey gameKey);
 
-    List<SportEvent> getGameHistory(@NonNull GameKey gameKey);
+    List<Game> getAll();
 
-    <T extends SportEvent> List<T> getEventsByClass(@NonNull GameKey gameKey, Class<T> eventClass);
-
-    void process(@NonNull SportEvent event);
+    Optional<Game> process(@NonNull SportEvent event);
 }
