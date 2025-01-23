@@ -5,19 +5,22 @@ import java.util.Map;
 
 import com.sportradar.scoreboard.domain.event.GoalEvent;
 import com.sportradar.scoreboard.domain.game.Game;
-import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 
 @RequiredArgsConstructor
 class GoalEventProcessor
 {
-    public Game process(final Game game, final GoalEvent goalEvent)
+    public Game process(@NonNull final Game game, @NonNull final GoalEvent goalEvent)
     {
         final var updatedScore = new HashMap<>(game.teamIdToScore());
-        updatedScore.computeIfPresent(goalEvent.getEventCommon().associatedTeamId(), (team, score) -> score + 1);
+        updatedScore.computeIfPresent(goalEvent.getScoringTeam(), (team, score) -> score + 1);
 
-        return game.toBuilder().withTeamIdToScore(Map.copyOf(updatedScore)).build();
+        return game.toBuilder()
+            .withTeamIdToScore(Map.copyOf(updatedScore))
+            .withTotalScore(game.totalScore() + 1)
+            .build();
     }
 }

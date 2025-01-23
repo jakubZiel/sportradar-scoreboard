@@ -1,21 +1,18 @@
 package com.sportradar.scoreboard.domain.processing;
 
-import com.sportradar.scoreboard.domain.event.CardEvent;
-import com.sportradar.scoreboard.domain.event.GameIsLiveEvent;
-import com.sportradar.scoreboard.domain.event.GameOvertimeEvent;
+import com.sportradar.scoreboard.domain.event.GameClosedEvent;
+import com.sportradar.scoreboard.domain.event.GameOpenedEvent;
 import com.sportradar.scoreboard.domain.event.GoalEvent;
-import com.sportradar.scoreboard.domain.event.SubstitutionEvent;
+import com.sportradar.scoreboard.domain.game.Game;
+
+import lombok.NonNull;
 
 
 public interface SportEventVisitor
 {
-    void visit(GoalEvent goalEvent);
+    Game visit(@NonNull GoalEvent goalEvent);
 
-    void visit(SubstitutionEvent substitutionEvent);
+    Game visit(@NonNull GameOpenedEvent gameOpenedEvent);
 
-    void visit(CardEvent substitutionEvent);
-
-    void visit(GameOvertimeEvent gameOvertimeEvent);
-
-    void visit(GameIsLiveEvent gameIsLiveEvent);
+    Game visit(@NonNull GameClosedEvent gameOpenedEvent);
 }

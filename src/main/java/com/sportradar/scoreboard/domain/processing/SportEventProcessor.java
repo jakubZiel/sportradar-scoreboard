@@ -2,12 +2,10 @@ package com.sportradar.scoreboard.domain.processing;
 
 import java.util.function.Function;
 
-import com.sportradar.scoreboard.domain.event.CardEvent;
-import com.sportradar.scoreboard.domain.event.GameIsLiveEvent;
-import com.sportradar.scoreboard.domain.event.GameOvertimeEvent;
+import com.sportradar.scoreboard.domain.event.GameAssociated;
+import com.sportradar.scoreboard.domain.event.GameClosedEvent;
+import com.sportradar.scoreboard.domain.event.GameOpenedEvent;
 import com.sportradar.scoreboard.domain.event.GoalEvent;
-import com.sportradar.scoreboard.domain.event.SportEvent;
-import com.sportradar.scoreboard.domain.event.SubstitutionEvent;
 import com.sportradar.scoreboard.domain.game.Game;
 import com.sportradar.scoreboard.domain.game.GameKey;
 import com.sportradar.scoreboard.interfaces.outgoing.GameStateRepository;
@@ -17,83 +15,48 @@ import lombok.NonNull;
 
 public class SportEventProcessor implements SportEventVisitor
 {
-    private final SubstitutionEventProcessor substitutionEventProcessor = new SubstitutionEventProcessor();
-    private final CardEventProcessor cardEventProcessor = new CardEventProcessor();
     private final GoalEventProcessor goalEventProcessor = new GoalEventProcessor();
-    private final GameOvertimeProcessor gameOvertimeProcessor = new GameOvertimeProcessor();
-    private final GameIsLiveEventProcessor gameIsLiveEventProcessor;
+    private final GameOpenedEventProcessor gameOpenedEventProcessor;
 
     private final GameStateRepository gameStateRepository;
 
     public SportEventProcessor(final GameStateRepository gameStateRepository)
     {
         this.gameStateRepository = gameStateRepository;
-        gameIsLiveEventProcessor = new GameIsLiveEventProcessor(gameStateRepository);
+        gameOpenedEventProcessor = new GameOpenedEventProcessor(gameStateRepository);
     }
 
     @Override
-    public void visit(final GoalEvent goalEvent)
+    public Game visit(@NonNull final GameOpenedEvent gameOpenedEvent)
     {
-        modifyGame(game -> goalEventProcessor.process(game, goalEvent), goalEvent);
+        final var gameUpdate = gameOpenedEventProcessor.process(gameOpenedEvent);
+        return gameStateRepository.save(gameUpdate.key(), gameUpdate);
     }
 
     @Override
-    public void visit(final SubstitutionEvent substitutionEvent)
+    public Game visit(@NonNull final GoalEvent goalEvent)
     {
-        modifyGame(game -> substitutionEventProcessor.process(game, substitutionEvent), substitutionEvent);
+        return modifyGame(game -> goalEventProcessor.process(game, goalEvent), goalEvent);
     }
 
     @Override
-    public void visit(final CardEvent cardEvent)
+    public Game visit(@NonNull final GameClosedEvent gameClosedEvent)
     {
-        modifyGame(game -> cardEventProcessor.process(game, cardEvent), cardEvent);
+        return modifyGame(game -> null, gameClosedEvent);
     }
 
-    @Override
-    public void visit(final GameOvertimeEvent gameOvertimeEvent)
+    private Game modifyGame(@NonNull final Function<Game, Game> gameModifier, @NonNull final GameAssociated event)
     {
-        modifyGame(game -> gameOvertimeProcessor.process(game, gameOvertimeEvent), gameOvertimeEvent);
-    }
+        final var associatedGame = gameStateRepository.findByKey(event.getGameKey());
 
-    @Override
-    public void visit(final GameIsLiveEvent gameIsLiveEvent)
-    {
-        gameIsLiveEventProcessor.process(gameIsLiveEvent);
-    }
-
-    private void modifyGame(@NonNull final Function<Game, Game> gameModifier, @NonNull final SportEvent event)
-    {
-        final var key = event.getEventCommon().gameKey();
-
-        gameStateRepository.findByKey(key)
-            .map(game -> validateEventTime(game, event))
-            .map(gameModifier)
-            .map(game -> modifyGameTime(game, event))
-            .ifPresentOrElse(gameStateRepository::save, () -> throwOnMissingGame(key));
-    }
-
-    @NonNull
-    private static Game modifyGameTime(final Game game, final SportEvent event)
-    {
-        final var eventTime = event.getEventCommon().matchTime();
-        final var gameTime = game.currentMatchTime();
-
-        return game.toBuilder()
-            .withCurrentMatchTime(eventTime.compareTo(gameTime) > 0 ? eventTime : gameTime)
-            .build();
-    }
-
-    @NonNull
-    private static Game validateEventTime(final Game game, final SportEvent sportEvent)
-    {
-        final var eventTime = sportEvent.getEventCommon().matchTime();
-
-        if (eventTime.isNegative())
+        if (associatedGame.isEmpty())
         {
-            throw new IllegalArgumentException("Event time is negative: %s".formatted(eventTime));
+            throwOnMissingGame(event.getGameKey());
         }
 
-        return game;
+        final var gameUpdate = gameModifier.apply(associatedGame.get());
+        gameStateRepository.save(event.getGameKey(), gameUpdate);
+        return gameUpdate;
     }
 
     private static void throwOnMissingGame(final GameKey gameKey)
