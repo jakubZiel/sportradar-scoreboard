@@ -1,10 +1,12 @@
 package com.sportradar.scoreboard.domain.game;
 
-import java.time.Instant;
+import com.sportradar.scoreboard.domain.team.Team;
 
+import lombok.Builder;
 import lombok.NonNull;
 
 
-public record GameKey(long team1Id, long team2Id, @NonNull Instant scheduled)
+@Builder(setterPrefix = "with", toBuilder = true)
+public record GameKey(Long gameId, @NonNull Team team1, @NonNull Team team2)
 {
 }

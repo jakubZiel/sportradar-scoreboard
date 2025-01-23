@@ -1,14 +1,10 @@
 package com.sportradar.scoreboard.domain.event;
 
+import com.sportradar.scoreboard.domain.game.Game;
 import com.sportradar.scoreboard.domain.processing.SportEventVisitor;
 
-import lombok.NonNull;
 
-
-public interface SportEvent
+public interface SportEvent extends GameAssociated
 {
-    @NonNull
-    EventCommon getEventCommon();
-
-    void accept(SportEventVisitor visitor);
+    Game accept(SportEventVisitor visitor);
 }
