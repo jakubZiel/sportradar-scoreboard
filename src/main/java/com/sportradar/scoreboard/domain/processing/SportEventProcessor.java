@@ -61,6 +61,6 @@ public class SportEventProcessor implements SportEventVisitor
 
     private static void throwOnMissingGame(final GameKey gameKey)
     {
-        throw new IllegalStateException("There is no game associated with a key: %s".formatted(gameKey));
+        throw new IllegalArgumentException("There is no game associated with a key: %s".formatted(gameKey));
     }
 }

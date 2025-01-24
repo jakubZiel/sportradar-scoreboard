@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import org.assertj.core.api.SoftAssertions;
 import org.assertj.core.api.junit.jupiter.SoftAssertionsExtension;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -102,6 +103,41 @@ class ScoreBoardServiceImplTest
 
         // then
         softly.assertThat(tested.getAll()).isEmpty();
+    }
+
+    @Test
+    void testGetGameState(final SoftAssertions softly)
+    {
+        // given
+        final var game = tested.process(GameOpenedEvent.builder().withGameKey(TestUtil.buildGameKey("MEX", "CAN")).build()).orElseThrow();
+
+        final var goalScored = GoalEvent.builder()
+            .withGameKey(game.key())
+            .withScoringTeam(game.key().team1())
+            .build();
+
+        tested.process(goalScored);
+
+        // when
+        final var foundGame = tested.getGameState(game.key()).orElseThrow();
+
+        // then
+        softly.assertThat(foundGame.key()).isEqualTo(game.key());
+        softly.assertThat(foundGame.teamIdToScore()).isEqualTo(Map.of(game.key().team1(), 1, game.key().team2(), 0));
+    }
+
+    @Test
+    void testProcess_givenNonExistingGameWhenProcessingEventOtherThanGameCreation_shouldThrow(final SoftAssertions softly)
+    {
+        // given
+        final var invalidGameKey = TestUtil.buildGameKey("MEX", "CAN");
+        final var eventWithoutAGame = GoalEvent.builder().withGameKey(invalidGameKey).withScoringTeam(invalidGameKey.team1()).build();
+
+        // when
+        final var exception = Assertions.assertThrows(IllegalArgumentException.class, () -> tested.process(eventWithoutAGame));
+
+        // then
+        softly.assertThat(exception).hasMessage("There is no game associated with a key: GameKey[gameId=null, team1=Team[country=MEX], team2=Team[country=CAN]]");
     }
 
     private Stream<GoalEvent> buildStream(final int goals, final Team scoringTeam, final GameKey gameKey)

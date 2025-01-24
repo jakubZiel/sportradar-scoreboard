@@ -28,7 +28,7 @@ public class TestUtil
             .build();
     }
 
-    public static Game buildGame(final int score1, final int score2, final String team1, final String team2, final long id)
+    public static Game buildGame(final int score1, final int score2, final String team1, final String team2, final Long id)
     {
         final var gameKey = GameKey.builder()
             .withTeam1(buildTeam(team1))
