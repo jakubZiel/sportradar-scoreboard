@@ -34,7 +34,7 @@ public class GameStateInMemoryRepository implements GameStateRepository
             .build();
 
         games.put(update.key(), update);
-        return games.get(update.key());
+        return update;
     }
 
     @Override
